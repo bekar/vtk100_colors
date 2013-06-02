@@ -8,6 +8,13 @@ from colors import pallet, fstyle
 
 default_font=[ "DejaVuSansMono", 11 ]
 
+pallet16 = [
+"000000","800000","008000","808000","000080","800080","008080","c0c0c0",
+"808080","ff0000","00ff00","ffff00","0000ff","ff00ff","00ffff","ffffff",
+]
+
+xx = [ "00", "5f", "87", "af", "d7", "ff" ]
+
 class vt100tk():
     def __init__(self, text):
         self.text=text
@@ -15,21 +22,40 @@ class vt100tk():
         self.text.tag_config(3, font=[ default_font[0], default_font[1], "italic"])
         self.text.tag_config(4, underline=TRUE)
         self.text.tag_config(9, overstrike=TRUE)
-        for i in range(30,38): self.text.tag_config(i, foreground=pallet[i-30])
-        for i in range(40,48): self.text.tag_config(i, background=pallet[i-40])
+        for i in range(8):
+            self.text.tag_config(i+30, foreground=pallet[i])
+            self.text.tag_config(i+40, background=pallet[i])
+        for i in range(16): self.text.tag_config("ex"+str(i), background="#"+pallet16[i])
+        for i in range(6):
+            for j in range(6):
+                for k in range(6):
+                    rgb="#"+xx[i]+xx[j]+xx[k]
+                    name="ex"+str(i*36+j*6+k+16)
+                    self.text.tag_config(name, background=rgb)
 
-    def tag_me(self, code, pre, cur):
-        c=int(code)
-        #if c is [ 5,38,48 ]: return
-        # if c>10 and c<30: return c
-        # if c>48: return c
-        self.text.tag_add(c, pre, cur)
+        for i in range(24):
+            value=hex(i*10+8)
+            rgb="#"+value[2:]*3
+            name="ex"+str(i+232)
+            self.text.tag_config(name, background=rgb)
 
     def de_code(self, fp, pre, cur):
+        self.extend=0
+        def tag_me(code):
+            c=int(code)
+            # if c is [ 5,38,48 ]: return
+            # if c>10 and c<30: return c
+            if self.extend==2: self.text.tag_add("ex"+code, pre, cur)
+            if self.extend: self.extend+=1; return; #2nd skip
+
+            if c==48: self.extend+=1; return;
+            self.text.tag_add(c, pre, cur)
+            return fp
+
         temp=fbreak=fp
-        while 1: #for letter in string[fp:]:
-            if string[fp]=="m": self.tag_me(string[fbreak:fp], pre, cur); break;
-            if string[fp]==";": self.tag_me(string[fbreak:fp], pre, cur); fbreak=fp+1
+        while 1:
+            if string[fp]=="m": tag_me(string[fbreak:fp]); break;
+            if string[fp]==";": tag_me(string[fbreak:fp]); fbreak=fp+1
             fp+=1
         return string[temp:fp];
 
@@ -49,7 +75,6 @@ class vt100tk():
                 cflag+=1
 
             if cflag==2:
-                #print(string[pcode], end="")
                 if string[pcode]!="0":
                      out=self.de_code(pcode, pre, cur)
                      print(out, end="^")
