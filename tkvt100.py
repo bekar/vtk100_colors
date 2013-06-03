@@ -49,12 +49,12 @@ class vt100tk():
     def de_code(self, fp, pre, cur):
         self.extend=0
         def tag_me(code):
-            c=int(code)
-            if self.extend==53: self.text.tag_add("bg"+code, pre, cur)
-            if self.extend==43: self.text.tag_add("fg"+code, pre, cur)
-            if self.extend: self.extend+=c; return; #2nd skip
-            if c in [ 38, 48 ]: self.extend=c; return;
-            self.text.tag_add(c, pre, cur)
+            tag=c=int(code)
+            if   self.extend==53: tag="bg"+code; self.extend=0;
+            elif self.extend==43: tag="fg"+code; self.extend=0;
+            elif self.extend: self.extend+=c; return; #2nd skip
+            elif c in [ 38, 48 ]: self.extend=c; return;
+            self.text.tag_add(tag, pre, cur)
 
         temp=fbreak=fp
         while 1:
@@ -66,15 +66,14 @@ class vt100tk():
     def parser(self, string):
         j=1
         cur=pre=pcode=code=""
-        self.fp=0
-        i=cflag=0
+        fp=i=cflag=0
         length=len(string) # what abut C style
 
-        while self.fp<length:
-            if string[self.fp]=='\x1b':
+        while fp<length:
+            if string[fp]=='\x1b':
                 pre=cur; cur=str(j)+'.'+str(i)
-                pcode=code; code=self.fp+2 # +2 shift escape sequence
-                while string[self.fp-1]!="m": self.fp+=1
+                pcode=code; code=fp+2 # +2 shift escape sequence
+                while string[fp-1]!="m": fp+=1
                 #print(end="|")
                 cflag+=1
             if cflag==2:
@@ -83,10 +82,10 @@ class vt100tk():
                      #print(out, end="^")
                 cflag-=1
 
-            if string[self.fp]=='\n': j+=1; i=-1;
-            self.text.insert(END, string[self.fp])
+            if string[fp]=='\n': j+=1; i=-1;
+            self.text.insert(END, string[fp])
             #print(string[self.fp], end="")
-            self.fp+=1; i+=1
+            fp+=1; i+=1
 
 if __name__ == "__main__" :
     if len(sys.argv)<2: print("Argument(s) Missing", file=sys.stderr); exit()
