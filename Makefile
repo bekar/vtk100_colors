@@ -1,5 +1,5 @@
 default:
-	@echo make [hello|ls|extreme(download required)]
+	@echo "make [hello|ls|extreme(download required)]"
 
 current: ls
 
@@ -10,4 +10,4 @@ ls:
 	./tkvt100.py ls --color=always
 
 extreme:
-	./tkvt100.py "../vt100-colors/colors.py"
+	./tkvt100.py cat colorextreme
