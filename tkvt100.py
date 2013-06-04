@@ -60,16 +60,16 @@ class vt100tk():
 
         temp=fbreak=fp
         while 1:
-            if string[fp]=="m": tag_me(string[fbreak:fp]); break;
-            if string[fp]==";": tag_me(string[fbreak:fp]); fbreak=fp+1
+            if self.string[fp]=="m": tag_me(self.string[fbreak:fp]); break;
+            if self.string[fp]==";": tag_me(self.string[fbreak:fp]); fbreak=fp+1
             fp+=1
-        return string[temp:fp];
+        return self.string[temp:fp];
 
     def parser(self, string):
         cur=pre=pcode=code=""
         j=1; i=fp=cflag=0
         length=len(string) # what abut C style
-
+        self.string=string
         while fp<length:
             if string[fp] in '\x1b':
                 pre=cur; cur=str(j)+'.'+str(i)
