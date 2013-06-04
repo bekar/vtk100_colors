@@ -3,12 +3,13 @@
 from tkinter import *
 from subprocess import check_output
 
-default_font=[ "DejaVuSansMono", 11 ]
+def_font=[ "DejaVuSansMono", 11 ]
 
 pallet16 = [
     "000000","800000","008000","808000","000080","800080","008080","c0c0c0",
     "808080","ff0000","00ff00","ffff00","0000ff","ff00ff","00ffff","ffffff",
 ]
+
 pallet8 = [
     "black", "red", "green", "yellow", "blue", "magenta", "cyan", "white",
     "magic",  # 8 enable 256 color
@@ -20,8 +21,8 @@ xx = [ "00", "5f", "87", "af", "d7", "ff" ]
 class vt100tk():
     def __init__(self, text):
         self.text=text
-        self.text.tag_config(1, font=[ default_font[0], default_font[1], "bold"])
-        self.text.tag_config(3, font=[ default_font[0], default_font[1], "italic"])
+        self.text.tag_config(1, font=[ def_font[0], def_font[1], "bold"])
+        self.text.tag_config(3, font=[ def_font[0], def_font[1], "italic"])
         self.text.tag_config(4, underline=TRUE)
         self.text.tag_config(9, overstrike=TRUE)
         # pallet8
@@ -40,7 +41,7 @@ class vt100tk():
                     self.text.tag_config("fg"+suffix, foreground=rgb)
                     self.text.tag_config("bg"+suffix, background=rgb)
         for i in range(24):
-            value=hex(i*10+8)
+            value=hex(i*10+8);
             rgb="#"+value[2:]*3
             suffix=str(i+232)
             self.text.tag_config("fg"+suffix, foreground=rgb)
@@ -64,34 +65,34 @@ class vt100tk():
         return string[temp:fp];
 
     def parser(self, string):
-        j=1
         cur=pre=pcode=code=""
-        fp=i=cflag=0
+        j=1; i=fp=cflag=0
         length=len(string) # what abut C style
 
         while fp<length:
-            if string[fp]=='\x1b':
+            if string[fp] in '\x1b':
                 pre=cur; cur=str(j)+'.'+str(i)
                 pcode=code; code=fp+2 # +2 shift escape sequence
-                while string[fp-1]!="m": fp+=1
+                while string[fp]!="m": fp+=1
                 #print(end="|")
-                cflag+=1
+                fp+=1; cflag+=1
+                continue
             if cflag==2:
-                if string[pcode]!="0":
-                     out=self.de_code(pcode, pre, cur)
-                     #print(out, end="^")
+                #print(string[pcode:pcode+2], end=" ")
+                if string[pcode:pcode+2]!="0m" :
+                    out=self.de_code(pcode, pre, cur)
                 cflag-=1
-
             if string[fp]=='\n': j+=1; i=-1;
             self.text.insert(END, string[fp])
-            #print(string[self.fp], end="")
+            #print(string[fp], end="")
             fp+=1; i+=1
 
 if __name__ == "__main__" :
-    if len(sys.argv)<2: print("Argument(s) Missing", file=sys.stderr); exit()
+    if len(sys.argv)<2:
+        print("Argument(s) Missing", file=sys.stderr); exit(1);
     string=check_output(sys.argv[1:], universal_newlines=True)
     root=Tk()
-    text=Text(root, font=default_font)
+    text=Text(root, font=def_font)
     vtk=vt100tk(text)
     vtk.parser(string)
     text.pack(expand=YES, fill=BOTH)
