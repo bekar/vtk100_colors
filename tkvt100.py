@@ -41,7 +41,7 @@ class vt100tk():
                     self.text.tag_config("fg"+suffix, foreground=rgb)
                     self.text.tag_config("bg"+suffix, background=rgb)
         for i in range(24):
-            value=hex(i*10+8);
+            value=hex(i*10+8)
             rgb="#"+value[2:]*3
             suffix=str(i+232)
             self.text.tag_config("fg"+suffix, foreground=rgb)
@@ -50,6 +50,7 @@ class vt100tk():
     def de_code(self, fp, pre, cur):
         self.extend=0
         def tag_me(code):
+            if code=="" : code="1" # no code condition ^[[m
             tag=c=int(code)
             if   self.extend==53: tag="bg"+code; self.extend=0;
             elif self.extend==43: tag="fg"+code; self.extend=0;
@@ -78,9 +79,8 @@ class vt100tk():
                 fp+=1; cflag+=1
                 continue
             if cflag==2:
-                #print(string[pcode:pcode+2], end=" ")
-                if string[pcode:pcode+2]!="0m" :
-                    out=self.de_code(pcode, pre, cur)
+                if string[pcode:pcode+2] is [ "0m", "m" ] : pass
+                else: out=self.de_code(pcode, pre, cur)
                 cflag-=1
             if string[fp]=='\n': j+=1; i=-1;
             self.text.insert(END, string[fp])
