@@ -41,8 +41,7 @@ class vt100tk():
                     self.text.tag_config("fg"+suffix, foreground=rgb)
                     self.text.tag_config("bg"+suffix, background=rgb)
         for i in range(24):
-            value=hex(i*10+8)
-            rgb="#"+value[2:]*3
+            value=hex(i*10+8); rgb="#"+value[2:]*3
             suffix=str(i+232)
             self.text.tag_config("fg"+suffix, foreground=rgb)
             self.text.tag_config("bg"+suffix, background=rgb)
@@ -66,6 +65,7 @@ class vt100tk():
         return self.string[temp:fp];
 
     def parser(self, string):
+        self.text.delete('1.0', END)
         cur=pre=pcode=code=""
         j=1; i=fp=cflag=0
         length=len(string) # what abut C style
