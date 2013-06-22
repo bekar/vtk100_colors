@@ -10,6 +10,13 @@ Dealing with the color output in terminal which is classy, but what about when y
 $ ./vtk100.py <any command with color output>
 ```
 
+To display plain text only set SGR to { 0, false }
+
+```bash
+$ SGR=0 ./vtk100.py <any command with color output>
+```
+
+
 If you have no idea what's suppose to be done run `make`:
 
 ```bash
