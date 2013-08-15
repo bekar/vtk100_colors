@@ -6,15 +6,16 @@ from subprocess import check_output
 
 def_font=[ "DejaVuSansMono", 11 ]
 
+pallet8 = [
+    "black", "red", "green", "yellow", "blue", "magenta", "cyan", "white",
+    "magic", "def", # magic: enable 256 color; default: foreground color
+]
+
 pallet16 = [
     "000000","800000","008000","808000","000080","800080","008080","c0c0c0",
     "808080","ff0000","00ff00","ffff00","0000ff","ff00ff","00ffff","ffffff",
 ]
-pallet8 = [
-    "black", "red", "green", "yellow", "blue", "magenta", "cyan", "white",
-    "magic",  # 8 enable 256 color
-    "def",    # 9 default foreground color
-]
+
 xx = [ "00", "5f", "87", "af", "d7", "ff" ]
 
 try:
@@ -80,11 +81,10 @@ class vt100tk():
                 pcode=code; code=fp+2 # +2 shift escape sequence
                 while string[fp]!="m": fp+=1
                 fp+=1; cflag+=1
-                continue
             if cflag==2 and SGR:
-                if string[pcode:pcode+2] is [ "0m", "m" ] : pass
-                else: self.de_code(pcode, pre, cur)
+                self.de_code(pcode, pre, cur);
                 cflag-=1
+                continue
             if string[fp]=='\n': j+=1; i=-1;
             self.txtwig.insert(END, string[fp])
             fp+=1; i+=1
