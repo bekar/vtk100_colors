@@ -1,2 +1,4 @@
-*.pyc
+*in
+*pyc
+test
 __init__.py

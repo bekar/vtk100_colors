@@ -21,10 +21,11 @@ If you have no idea what's suppose to be done run `make`:
 
 ```bash
 $ make
-make [hello|ls|extreme(download required)]
+make [hello|ls]
 ```
 
-there are 3 samples you can play with. extreme has to be [downloaded][extreme] which has been shown in the screenshot:
+there are samples you can test.
+try [extreme][extreme] which has been shown in the screenshot.
 
 #### Read more
 
