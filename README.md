@@ -3,29 +3,26 @@
 Dealing with the color output in terminal which is classy, but what about when you try to get those in the tkinter, yes this what `vtk100-colors` is intends to do.
 
 ![screenshot][screenshot]
+above test file in screenshot can be donwload from [here][extreme].
 
 #### HOW-TO-RUN
 
 ```bash
-$ ./vtk100.py <any command with color output>
+$ ./main.py <any command with color output>
 ```
 
 To display plain text only set SGR to { 0, false }
 
 ```bash
-$ SGR=0 ./vtk100.py <any command with color output>
+$ SGR=0 ./main.py <any command with color output>
 ```
 
-
-If you have no idea what's suppose to be done run `make`:
+Some example simple examples can be found in `make`:
 
 ```bash
 $ make
 make [hello|ls]
 ```
-
-there are samples you can test.
-try [extreme][extreme] which has been shown in the screenshot.
 
 #### Read more
 

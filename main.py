@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
-import os
 from tkinter import *
-from subprocess import check_output
 
 def_font=[ "DejaVuSansMono", 11 ]
 
@@ -52,28 +50,29 @@ class vt100tk():
             self.txtwig.tag_config("bg"+suffix, background=rgb)
         if string: self.parser(string)
 
-    def de_code(self, fp, pre, cur):
-        self.extend=0
-        def tag_me(code):
-            if code=="" : code="0" # no code condition ^[[m
-            tag=int(code)
-            if   self.extend==53: tag="bg"+code; self.extend=0;
-            elif self.extend==43: tag="fg"+code; self.extend=0;
-            elif self.extend: self.extend+=tag; return; #2nd skip
-            elif tag in [ 38, 48 ]: self.extend=tag; return;
-            self.txtwig.tag_add(tag, pre, cur)
+    def tag_me(self, code, pre, cur):
+        tag=int(code)
+        if code == 0: return
+        if   self.extend==53: tag="bg"+code; self.extend=0;
+        elif self.extend==43: tag="fg"+code; self.extend=0;
+        elif self.extend: self.extend+=tag; return; #2nd skip
+        elif tag in [ 38, 48 ]: self.extend=tag; return;
+        self.txtwig.tag_add(tag, pre, cur)
 
-        fbreak=fp
-        while True:
-            if self.string[fp]=="m": tag_me(self.string[fbreak:fp]); break;
-            if self.string[fp]==";": tag_me(self.string[fbreak:fp]); fbreak=fp+1
+    def de_code(self, fp, pre, cur):
+        self.extend=0; fbreak=fp
+        while self.string[fp] != 'm':
+            if self.string[fp]==";":
+                self.tag_me(self.string[fbreak:fp], pre, cur);
+                fbreak=fp+1
             fp+=1
+        if fp-fbreak == 0: return
+        self.tag_me(self.string[fbreak:fp], pre, cur)
 
     def parser(self, string):
         self.txtwig.delete('1.0', END)
-        cur=pre=pcode=code=""
-        j=1; i=fp=cflag=0
-        length=len(string) # what abut C style
+        cur=""; j=1; i=fp=cflag=code=0
+        length=len(string)
         self.string=string
         while fp<length:
             if string[fp]=='\x1b':
@@ -81,11 +80,11 @@ class vt100tk():
                 pcode=code; code=fp+2 # +2 shift escape sequence
                 while string[fp]!="m": fp+=1
                 fp+=1; cflag+=1
-            if cflag==2 and SGR:
-                self.de_code(pcode, pre, cur);
-                cflag-=1
-                continue
-            if string[fp]=='\n': j+=1; i=-1;
+                if cflag==2 and SGR:
+                    self.de_code(pcode, pre, cur)
+                    cflag-=1;
+
+            if string[fp]=='\n': j+=1; i=-1; #print()
             self.txtwig.insert(END, string[fp])
             fp+=1; i+=1
 
@@ -94,6 +93,7 @@ if __name__ == "__main__" :
         print("Argument(s) Missing", file=sys.stderr); exit(1);
     root=Tk()
     text=Text(root, font=def_font)
+    from subprocess import check_output
     vtk=vt100tk(text, check_output(sys.argv[1:], universal_newlines=True))
     text.pack(expand=YES, fill=BOTH)
     root.bind('<Key-Escape>', quit)
