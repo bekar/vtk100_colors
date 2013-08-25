@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
+import os
 from tkinter import *
 
-def_font=[ "DejaVuSansMono", 11 ]
+def_font=[ "DejaVuSansMono", 11, "normal" ]
 
 pallet8 = [
     "black", "red", "green", "yellow", "blue", "magenta", "cyan", "white",
@@ -25,8 +26,8 @@ except Exception as NoEnvVariableSet:
 class vt100tk():
     def __init__(self, txt_wig, string=None):
         self.txtwig=txt_wig
-        self.txtwig.tag_config(1, font=[ def_font[0], def_font[1], "bold"])
-        self.txtwig.tag_config(3, font=[ def_font[0], def_font[1], "italic"])
+        self.txtwig.tag_config(1, font=def_font[:2] + ["bold"])
+        self.txtwig.tag_config(3, font=def_font[:2] + ["italic"])
         self.txtwig.tag_config(4, underline=TRUE)
         self.txtwig.tag_config(9, overstrike=TRUE)
         for i in range(8): # pallet8
@@ -51,8 +52,9 @@ class vt100tk():
         if string: self.parser(string)
 
     def tag_me(self, code, pre, cur):
-        tag=int(code)
+        if not code: return
         if code == 0: return
+        tag=int(code)
         if   self.extend==53: tag="bg"+code; self.extend=0;
         elif self.extend==43: tag="fg"+code; self.extend=0;
         elif self.extend: self.extend+=tag; return; #2nd skip
@@ -66,7 +68,6 @@ class vt100tk():
                 self.tag_me(self.string[fbreak:fp], pre, cur);
                 fbreak=fp+1
             fp+=1
-        if fp-fbreak == 0: return
         self.tag_me(self.string[fbreak:fp], pre, cur)
 
     def parser(self, string):
@@ -83,7 +84,6 @@ class vt100tk():
                 if cflag==2 and SGR:
                     self.de_code(pcode, pre, cur)
                     cflag-=1;
-
             if string[fp]=='\n': j+=1; i=-1; #print()
             self.txtwig.insert(END, string[fp])
             fp+=1; i+=1
