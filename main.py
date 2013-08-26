@@ -7,7 +7,7 @@ def_font=[ "DejaVuSansMono", 11, "normal" ]
 
 pallet8 = [
     "black", "red", "green", "yellow", "blue", "magenta", "cyan", "white",
-    "magic", "def", # magic: enable 256 color; default: foreground color
+    "magic", "default", # magic: enable 256 color
 ]
 
 pallet16 = [
@@ -51,10 +51,10 @@ class vt100tk():
             self.txtwig.tag_config("bg"+suffix, background=rgb)
         if string: self.parser(string)
 
-    def tag_me(self, code, pre, cur):
+    def tag_sgr(self, code, pre, cur):
         if not code: return
-        if code == 0: return
         tag=int(code)
+        if tag == 0: return
         if   self.extend==53: tag="bg"+code; self.extend=0;
         elif self.extend==43: tag="fg"+code; self.extend=0;
         elif self.extend: self.extend+=tag; return; #2nd skip
@@ -65,10 +65,10 @@ class vt100tk():
         self.extend=0; fbreak=fp
         while self.string[fp] != 'm':
             if self.string[fp]==";":
-                self.tag_me(self.string[fbreak:fp], pre, cur);
+                self.tag_sgr(self.string[fbreak:fp], pre, cur);
                 fbreak=fp+1
             fp+=1
-        self.tag_me(self.string[fbreak:fp], pre, cur)
+        self.tag_sgr(self.string[fbreak:fp], pre, cur)
 
     def parser(self, string):
         self.txtwig.delete('1.0', END)
