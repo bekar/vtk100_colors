@@ -11,6 +11,8 @@ above test file in screenshot can be donwload from [here][extreme].
 $ ./main.py <any command with color output>
 ```
 
+#### *tip: use the tee command to grab output
+
 To display plain text only set SGR to { 0, false }
 
 ```bash

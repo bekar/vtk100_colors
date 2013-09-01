@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import os
 from tkinter import *
 
 def_font=[ "DejaVuSansMono", 11, "normal" ]
@@ -17,6 +16,7 @@ pallet16 = [
 
 xx = [ "00", "5f", "87", "af", "d7", "ff" ]
 
+import os
 try:
     if os.environ['SGR'].lower() in [ "false", "0" ]: SGR=False
     else: SGR=True
@@ -55,8 +55,8 @@ class vt100tk():
         if not code: return
         tag=int(code)
         if tag == 0: return
-        if   self.extend==53: tag="bg"+code; self.extend=0;
-        elif self.extend==43: tag="fg"+code; self.extend=0;
+        if   self.extend==53: tag="bg"+code; self.extend=0; # 38+5+code
+        elif self.extend==43: tag="fg"+code; self.extend=0; # 48+5+code
         elif self.extend: self.extend+=tag; return; #2nd skip
         elif tag in [ 38, 48 ]: self.extend=tag; return;
         self.txtwig.tag_add(tag, pre, cur)
@@ -82,8 +82,8 @@ class vt100tk():
                 while string[fp]!="m": fp+=1
                 fp+=1; cflag+=1
                 if cflag==2 and SGR:
-                    self.de_code(pcode, pre, cur)
-                    cflag-=1;
+                    self.de_code(pcode, pre, cur); cflag-=1;
+                continue # for fp>strlen
             if string[fp]=='\n': j+=1; i=-1; #print()
             self.txtwig.insert(END, string[fp])
             fp+=1; i+=1
@@ -96,5 +96,5 @@ if __name__ == "__main__" :
     from subprocess import check_output
     vtk=vt100tk(text, check_output(sys.argv[1:], universal_newlines=True))
     text.pack(expand=YES, fill=BOTH)
-    root.bind('<Key-Escape>', quit)
+    root.bind("<Key-Escape>", lambda event: quit())
     root.mainloop()
