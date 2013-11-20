@@ -33,18 +33,17 @@ class vt100tk():
         for i in range(8): # pallet8
             self.txtwig.tag_config(i+30, foreground=pallet8[i])
             self.txtwig.tag_config(i+40, background=pallet8[i])
-        # 256-colors
-        for i in range(16):
+        for i in range(16): # 0-15/256-colors
             self.txtwig.tag_config("fg"+str(i), foreground="#"+pallet16[i])
             self.txtwig.tag_config("bg"+str(i), background="#"+pallet16[i])
-        for i in range(6):
+        for i in range(6): # 16-231/256-colors
             for j in range(6):
                 for k in range(6):
                     rgb="#"+xx[i]+xx[j]+xx[k]
                     suffix=str(i*36+j*6+k+16)
                     self.txtwig.tag_config("fg"+suffix, foreground=rgb)
                     self.txtwig.tag_config("bg"+suffix, background=rgb)
-        for i in range(24):
+        for i in range(24): # 232-255/256-colors
             value=hex(i*10+8); rgb="#"+value[2:]*3
             suffix=str(i+232)
             self.txtwig.tag_config("fg"+suffix, foreground=rgb)
@@ -52,14 +51,15 @@ class vt100tk():
         if string: self.parser(string)
 
     def tag_sgr(self, code, pre, cur):
-        if not code: return
-        tag=int(code)
-        if tag == 0: return
+        if not code: return None
+        tag=int(code);
+        if tag == 0: return None
         if   self.extend==53: tag="bg"+code; self.extend=0; # 38+5+code
         elif self.extend==43: tag="fg"+code; self.extend=0; # 48+5+code
         elif self.extend: self.extend+=tag; return; #2nd skip
         elif tag in [ 38, 48 ]: self.extend=tag; return;
         self.txtwig.tag_add(tag, pre, cur)
+        return tag
 
     def de_code(self, fp, pre, cur):
         self.extend=0; fbreak=fp
@@ -68,7 +68,7 @@ class vt100tk():
                 self.tag_sgr(self.string[fbreak:fp], pre, cur);
                 fbreak=fp+1
             fp+=1
-        self.tag_sgr(self.string[fbreak:fp], pre, cur)
+        return self.tag_sgr(self.string[fbreak:fp], pre, cur)
 
     def parser(self, string):
         self.txtwig.delete('1.0', END)
