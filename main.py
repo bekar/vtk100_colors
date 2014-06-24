@@ -7,12 +7,10 @@ pallet8 = [
     "black", "red", "green", "yellow", "blue", "magenta", "cyan", "white",
     "magic", "default", # magic: enable 256 color
 ]
-
 pallet16 = [
     "000000","800000","008000","808000","000080","800080","008080","c0c0c0",
     "808080","ff0000","00ff00","ffff00","0000ff","ff00ff","00ffff","ffffff",
 ]
-
 xx = [ "00", "5f", "87", "af", "d7", "ff" ]
 
 try:
@@ -21,7 +19,8 @@ try:
 except Exception as NoEnvVariableSet:
     SGR = True
 
-class vt100tk():
+class vt100():
+    '''vt100 terminal color to tkinter Text widget'''
     def __init__(self, text_wig, string=None):
         self.txtwig = text_wig
         self.i = 0; self.j = 1
@@ -92,9 +91,10 @@ class vt100tk():
 if __name__ == "__main__" :
     if len(sys.argv) < 2:
         print("Argument(s) Missing", file=sys.stderr); exit(1);
+
     from subprocess import check_output
     text = tk.Text(font=[ "DejaVuSansMono", 11, "normal" ])
     text.pack(expand=1, fill="both")
-    vt100tk(text, check_output(sys.argv[1:], universal_newlines=True))
+    vt100(text, check_output(sys.argv[1:], universal_newlines=True))
     text.master.bind("<Key-Escape>", lambda event: quit())
     tk.mainloop()

@@ -1,6 +1,6 @@
-# vtk100-colors
+# vtk100_colors
 
-Dealing with the color output in terminal which is classy, but what about when you try to get those in the tkinter, yes this what `vtk100-colors` is intends to do.
+Dealing with the color output in terminal which is classy, but what about when you try to get those in the tkinter, yes this what `vtk100_colors` is intends to do.
 
 ![screenshot][screenshot]
 above test file in screenshot can be donwload from [here][extreme].
