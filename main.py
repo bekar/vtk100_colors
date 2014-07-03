@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 '''vt100 terminal color to tkinter Text widget'''
 
 import sys
@@ -49,12 +48,13 @@ class vt100:
             self.txtwig.tag_config(prefix+"bg", background=rgb)
 
     def tagSGR(self, code):
-        if code in [ "", "0" ]: return None
+        if code == "": return
         if   self.ext == "485": code += "bg"; self.ext = ""
         elif self.ext == "385": code += "fg"; self.ext = ""
         elif self.ext: self.ext += code; return; # 2nd skip
         elif code in [ "38", "48" ]: self.ext = code; return;
         else: code = int(code) # escape precision ie. 01
+        if code == 0: return # ignore 0
         self.txtwig.tag_add(code, self.pre, self.cur)
         return code
 
@@ -76,7 +76,7 @@ class vt100:
             if string[fp]=='\x1b':
                 self.pre = self.cur
                 self.cur = str(self.j) + '.' +str(self.i) #self.txtwig.index(tk.CURRENT)
-                pcode = code + 2; code = fp # +2 shift escape sequence
+                pcode = code; code = fp + 2 # +2 shift escape sequence
                 while string[fp] != "m": fp += 1
                 fp += 1; cflag += 1
                 if cflag == 2:
