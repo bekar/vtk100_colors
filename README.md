@@ -13,12 +13,6 @@ $ ./main.py <any command with color output>
 
 #### *tip: use the tee command to grab output
 
-To display plain text only set SGR to { 0, false }
-
-```bash
-$ SGR=0 ./main.py <any command with color output>
-```
-
 Some example simple examples can be found in `make`:
 
 ```bash
