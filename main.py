@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 '''vt100 terminal color to tkinter Text widget'''
 
-import sys
-import tkinter as tk
-import tkinter.font as tkFont
-
-class vt100:
+class VT100:
     def __init__(self, text_wig, string=None):
         self.txtwig = text_wig
         self.i = 0; self.j = 1
@@ -23,13 +19,13 @@ class vt100:
         self.txtwig.tag_config('3', font=italic_font)
         self.txtwig.tag_config('4', underline=1)
         self.txtwig.tag_config('9', overstrike=1)
-        pallet8 = [
+        self.pallet8 = [
             "black", "red", "green", "yellow", "blue", "magenta",
             "cyan", "white", "magic", "default", # magic: enable 256 color
         ]
         for i in range(8): # pallet8
-            self.txtwig.tag_config(str(i+30), foreground=pallet8[i])
-            self.txtwig.tag_config(str(i+40), background=pallet8[i])
+            self.txtwig.tag_config(str(i+30), foreground=self.pallet8[i])
+            self.txtwig.tag_config(str(i+40), background=self.pallet8[i])
         pallet16 = [
             "000000","800000","008000","808000","000080","800080","008080","c0c0c0",
             "808080","ff0000","00ff00","ffff00","0000ff","ff00ff","00ffff","ffffff",
@@ -87,14 +83,18 @@ class vt100:
             fp += 1; self.i += 1
 
 if __name__ == "__main__" :
+    import sys
     if len(sys.argv) < 2:
         print("Argument(s) Missing", file=sys.stderr); exit(1);
 
-    from subprocess import check_output
+    import tkinter as tk
     root = tk.Tk()
+    import tkinter.font as tkFont
     f = tkFont.Font(family="DejaVuSansMono", size=11)
     text = tk.Text(font=f)
     text.pack(expand=1, fill="both")
-    vt100(text, check_output(sys.argv[1:], universal_newlines=True))
-    root.bind("<Key-Escape>", lambda event: quit())
+
+    from subprocess import check_output
+    VT100(text, check_output(sys.argv[1:], universal_newlines=True))
+    root.bind("<Key-Escape>", lambda event: root.quit())
     tk.mainloop()
